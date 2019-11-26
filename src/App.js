@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import './App.css';
+import '../node_modules/uikit/dist/css/uikit.css'
 import { fetchChecklist, createChecklist, updateChecklist, deleteChecklist } from './checklist/checklist.action';
 
 const uuid = require('uuid/v4');
@@ -12,7 +13,7 @@ class App extends React.Component {
     this.state = {
       id: '',
       desc: '',
-      enabled: true
+      enabled: false
     }
   }
 
@@ -63,7 +64,7 @@ class App extends React.Component {
     this.setState({
       id: '',
       desc: '',
-      enabled: true
+      enabled: false
     });
   }
 
@@ -79,6 +80,12 @@ class App extends React.Component {
     });
   }
 
+  _onClickEditCheckHandler = () => {
+    this.setState({
+      enabled: !this.state.enabled
+    });
+  }
+
   render() {
     const { checklists } = this.props;
     let editedList = {
@@ -88,11 +95,12 @@ class App extends React.Component {
     }
 
     return(
-      <div className="App">
+      <div className="main-container uk-container uk-position-top-center">
         <ListForm onSave={this._onClickSaveHandler} 
         onClear={this._clearFields}
         list={editedList}
         onFieldChange={this._onFieldChangeHandler}
+        onClickChecker={this._onClickEditCheckHandler}
         onKeyDown={this._onKeyDownHandler} />
 
         {
@@ -109,14 +117,34 @@ class App extends React.Component {
 }
 
 class SingleList extends React.Component {
+
+  _renderButtons() {
+    const { list, onDelete, onEdit } = this.props;
+    
+    return (
+      <div className="uk-button-group" uk-margin>
+        <button className="uk-button uk-button-small uk-button-primary" 
+          uk-tooltip="title: Delete this list; pos: right;" 
+          onClick={() => onDelete(list)}><span role="img" aria-label="delete this item">🚮</span>
+        </button>
+        <button className="uk-button uk-button-small uk-button-default" 
+          uk-tooltip="title: Edit this list; pos: right;" 
+          onClick={() => onEdit(list)}><span role="img" aria-label="edit this item">📝</span>
+        </button>
+      </div>
+    )
+  }
+
   render() {
-    const { list, onDelete, onEdit, onToggle } = this.props;
+    const { list, onToggle } = this.props;
 
     return(
-        <div>
-          <button onClick={() => onDelete(list)}><span role="img" aria-label="delete this item">❌</span></button> 
-          <button onClick={() => onEdit(list)}><span role="img" aria-label="edit this item">📝</span></button>&nbsp;
-          <span className={ list.enabled ? "checklist-base" : "checklist-done" } onClick={() => onToggle(list)}>{list.desc}</span>
+        <div className="list-item">
+          {this._renderButtons()}
+          <div className="list-item-desc uk-margin-left" onClick={() => onToggle(list)}>
+            <span className={ list.enabled ? "checklist-done" : "checklist-base" }>{list.desc}</span>
+          </div>
+          
         </div>
     );
   }
@@ -124,17 +152,22 @@ class SingleList extends React.Component {
 
 class ListForm extends React.Component {
   render() {
-    const { list, onFieldChange, onSave, onClear, onKeyDown } = this.props;
+    const { list, onFieldChange, onSave, onClear, onKeyDown, onClickChecker } = this.props;
 
     return (
-      <React.Fragment>
-        <input type="text" id="descField" name="desc" placeholder="Enter list description" autoFocus
+      <div className="uk-margin" uk-form-custom>
+        <span className="input-form-checklist" role="img" aria-label="form-check" 
+        uk-tooltip="title: ✔ means done; pos: right;"
+        onClick={onClickChecker}>{list.enabled ? '✔' : '❌' } </span>
+        <input className="uk-input uk-form-width-large" type="text" id="descField" name="desc" placeholder="Enter list description" autoFocus
         onChange={onFieldChange} 
         onKeyDown={onKeyDown}
         value={list.desc}></input>
-        <button onClick={onSave}>{list.id === '' ? 'Add' : 'Save' } List</button>
-        <button onClick={onClear}>Clear</button>
-      </React.Fragment>
+        <div className="uk-button-group">
+          <button className="uk-button uk-button-primary" onClick={onSave}>{list.id === '' ? 'Add' : 'Save' } List</button>
+          <button className="uk-button uk-button-default" onClick={onClear}>Clear</button>
+        </div>
+      </div>
     );
   }
 }
