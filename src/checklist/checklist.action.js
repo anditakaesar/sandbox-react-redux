@@ -7,21 +7,21 @@ export const UPDATE_CHECKLIST = `${CHECKLIST} UPDATE_CHECKLIST`;
 export const DELETE_CHECKLIST = `${CHECKLIST} DELETE_CHECKLIST`;
 
 export const fetchChecklist = () => ({
-    action: FETCH_CHECKLIST,
+    type: FETCH_CHECKLIST,
     payload: null
 });
 
-export const createChecklist = ({checklist}) => ({
-    action: CREATE_CHECKLIST,
+export const createChecklist = (checklist) => ({
+    type: CREATE_CHECKLIST,
     payload: checklist
 });
 
-export const updateChecklist = ({checklist}) => ({
-    action: UPDATE_CHECKLIST,
+export const updateChecklist = (checklist) => ({
+    type: UPDATE_CHECKLIST,
     payload: checklist
 });
 
-export const deleteChecklist = ({checklist}) => ({
-    action: DELETE_CHECKLIST,
+export const deleteChecklist = (checklist) => ({
+    type: DELETE_CHECKLIST,
     payload: checklist
 });

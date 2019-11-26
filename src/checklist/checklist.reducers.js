@@ -22,7 +22,7 @@ export const checklistReducer = (lists = initialState.checklists, action) => {
 
         case DELETE_CHECKLIST:
             newC = [...lists];
-            listIndex = newC.filter(l => l.id !== action.payload.id);
+            newC = newC.filter(l => l.id !== action.payload.id);
             return newC;
 
         default:
