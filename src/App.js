@@ -1,48 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import './App.css';
 import { fetchChecklist, createChecklist, updateChecklist, deleteChecklist } from './checklist/checklist.action';
 
 const uuid = require('uuid/v4');
 
 class App extends React.Component {
-
-  _onClickAddHandler = (checklist) => {
-    this.props.createChecklist(checklist);
-  }
-
-  _onClickDeleteHandler = (checklist) => {
-    this.props.deleteChecklist(checklist);
-  }
-
-  render() {
-    const { checklists } = this.props;
-
-    return(
-      <div className="App">
-        <ListForm onAdd={this._onClickAddHandler} />
-        {
-          checklists.map((l, i) => 
-            <SingleList list={l} key={l.id} onDelete={this._onClickDeleteHandler} />)
-        }
-        
-      </div>
-    );
-  }
-}
-
-class SingleList extends React.Component {
-  render() {
-    const { list, onDelete } = this.props;
-
-    return(
-        <div>
-          {list.desc} of id {list.id} <button onClick={() => this.props.onDelete(list)}>❌</button>
-        </div>
-    );
-  }
-}
-
-class ListForm extends React.Component {
 
   constructor(props) {
     super(props);
@@ -53,7 +16,7 @@ class ListForm extends React.Component {
     }
   }
 
-  _onFieldChange = (event) => {
+  _onFieldChangeHandler = (event) => {
     const { name, value } = event.target;
 
     this.setState({
@@ -61,40 +24,116 @@ class ListForm extends React.Component {
     });
   }
 
-  _onAddBtnHandler = () => {
+  _onKeyDownHandler = (event) => {
+    // handle Enter key
+    if (event.key === 'Enter') {
+      this._onClickSaveHandler();
+    }
+  }
+
+  _onClickSaveHandler = () => {
     const { id, desc, enabled } = this.state;
 
     if (desc !== '') {
-      let newid = uuid();
+
       let checklist = {
+        id: id,
         desc: desc,
         enabled: enabled
       }
 
       if (id === '') {
+        let newid = uuid();
         checklist.id = newid;
-        this.props.onAdd(checklist);
+        this.props.createChecklist(checklist);
       } else {
-        console.log('editing');
+        this.props.updateChecklist(checklist);
       }
-      this.clearFields();
+
+      this._clearFields();
     }
   }
 
-  clearFields() {
+  _onListToggleHandler = (checklist) => {
+    checklist.enabled = !checklist.enabled;
+    this.props.updateChecklist(checklist);
+  }
+
+  _clearFields = () => {
     this.setState({
       id: '',
-      desc: ''
+      desc: '',
+      enabled: true
+    });
+  }
+
+  _onClickDeleteHandler = (checklist) => {
+    this.props.deleteChecklist(checklist);
+  }
+
+  _onClickEditHandler = (checklist) => {
+    this.setState({
+      id: checklist.id,
+      desc: checklist.desc,
+      enabled: checklist.enabled
     });
   }
 
   render() {
-    const { onAdd } = this.props;
+    const { checklists } = this.props;
+    let editedList = {
+      id: this.state.id,
+      desc: this.state.desc,
+      enabled: this.state.enabled
+    }
+
+    return(
+      <div className="App">
+        <ListForm onSave={this._onClickSaveHandler} 
+        onClear={this._clearFields}
+        list={editedList}
+        onFieldChange={this._onFieldChangeHandler}
+        onKeyDown={this._onKeyDownHandler} />
+
+        {
+          checklists.map((l, i) => 
+            <SingleList list={l} key={l.id} 
+            onDelete={this._onClickDeleteHandler}
+            onEdit={this._onClickEditHandler}
+            onToggle={this._onListToggleHandler} />)
+        }
+        
+      </div>
+    );
+  }
+}
+
+class SingleList extends React.Component {
+  render() {
+    const { list, onDelete, onEdit, onToggle } = this.props;
+
+    return(
+        <div>
+          <button onClick={() => onDelete(list)}><span role="img" aria-label="delete this item">❌</span></button> 
+          <button onClick={() => onEdit(list)}><span role="img" aria-label="edit this item">📝</span></button>&nbsp;
+          <span className={ list.enabled ? "checklist-base" : "checklist-done" } onClick={() => onToggle(list)}>{list.desc}</span>
+        </div>
+    );
+  }
+}
+
+class ListForm extends React.Component {
+  render() {
+    const { list, onFieldChange, onSave, onClear, onKeyDown } = this.props;
 
     return (
       <React.Fragment>
-        <input type="text" id="descField" name="desc" onChange={this._onFieldChange} value={this.state.desc}></input>
-        <button onClick={this._onAddBtnHandler}>Add List</button>
+        <input type="text" id="descField" name="desc" placeholder="Enter list description" autoFocus
+        onChange={onFieldChange} 
+        onKeyDown={onKeyDown}
+        value={list.desc}></input>
+        <button onClick={onSave}>{list.id === '' ? 'Add' : 'Save' } List</button>
+        <button onClick={onClear}>Clear</button>
       </React.Fragment>
     );
   }

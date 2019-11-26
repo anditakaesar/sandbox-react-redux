@@ -1,0 +1,9 @@
+.checklist-done {
+    text-decoration: line-through;
+    cursor: pointer;
+}
+
+.checklist-base {
+    text-decoration: none;
+    cursor: pointer;
+}
