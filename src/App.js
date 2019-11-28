@@ -13,7 +13,7 @@ class App extends React.Component {
     this.state = {
       id: '',
       desc: '',
-      enabled: false
+      checked: false
     }
   }
 
@@ -33,14 +33,14 @@ class App extends React.Component {
   }
 
   _onClickSaveHandler = () => {
-    const { id, desc, enabled } = this.state;
+    const { id, desc, checked } = this.state;
 
     if (desc !== '') {
 
       let checklist = {
         id: id,
         desc: desc,
-        enabled: enabled
+        checked: checked
       }
 
       if (id === '') {
@@ -56,7 +56,7 @@ class App extends React.Component {
   }
 
   _onListToggleHandler = (checklist) => {
-    checklist.enabled = !checklist.enabled;
+    checklist.checked = !checklist.checked;
     this.props.updateChecklist(checklist);
   }
 
@@ -64,7 +64,7 @@ class App extends React.Component {
     this.setState({
       id: '',
       desc: '',
-      enabled: false
+      checked: false
     });
   }
 
@@ -76,13 +76,13 @@ class App extends React.Component {
     this.setState({
       id: checklist.id,
       desc: checklist.desc,
-      enabled: checklist.enabled
+      checked: checklist.checked
     });
   }
 
   _onClickEditCheckHandler = () => {
     this.setState({
-      enabled: !this.state.enabled
+      checked: !this.state.checked
     });
   }
 
@@ -91,7 +91,7 @@ class App extends React.Component {
     let editedList = {
       id: this.state.id,
       desc: this.state.desc,
-      enabled: this.state.enabled
+      checked: this.state.checked
     }
 
     return(
@@ -142,7 +142,7 @@ class SingleList extends React.Component {
         <div className="list-item">
           {this._renderButtons()}
           <div className="list-item-desc uk-margin-left" onClick={() => onToggle(list)}>
-            <span className={ list.enabled ? "checklist-done" : "checklist-base" }>{list.desc}</span>
+            <span className={ list.checked ? "checklist-done" : "checklist-base" }>{list.desc}</span>
           </div>
           
         </div>
@@ -158,7 +158,7 @@ class ListForm extends React.Component {
       <div className="uk-margin" uk-form-custom>
         <span className="input-form-checklist" role="img" aria-label="form-check" 
         uk-tooltip="title: ✔ means done; pos: right;"
-        onClick={onClickChecker}>{list.enabled ? '✔' : '❌' } </span>
+        onClick={onClickChecker}>{list.checked ? '✔' : '❌' } </span>
         <input className="uk-input uk-form-width-large" type="text" id="descField" name="desc" placeholder="Enter list description" autoFocus
         onChange={onFieldChange} 
         onKeyDown={onKeyDown}
