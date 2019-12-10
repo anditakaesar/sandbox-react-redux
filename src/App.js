@@ -13,18 +13,20 @@ class App extends React.Component {
   render() {
     return (
       <Router>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/pageone">Page One</Link>
-            </li>
-            <li>
-              <Link to="/pagetwo">Page Two</Link>
-            </li>
-            <li>
-              <Link to="/checklist">Checklist Demo</Link>
-            </li>
-          </ul>
+        <nav className="uk-navbar-container" uk-navbar>
+          <div className="uk-navbar-left">
+            <ul className="uk-navbar-nav">
+              <li>
+                <Link to="/pageone">Page One</Link>
+              </li>
+              <li>
+                <Link to="/pagetwo">Page Two</Link>
+              </li>
+              <li>
+                <Link to="/checklist">Checklist Demo</Link>
+              </li>
+            </ul>
+          </div>
         </nav>
 
         <main>

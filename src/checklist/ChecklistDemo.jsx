@@ -92,7 +92,7 @@ class CheckListDemo extends React.Component {
     }
 
     return(
-      <div className="main-container uk-container uk-position-top-center">
+      <div className="main-container uk-container">
         <ListForm onSave={this._onClickSaveHandler} 
         onClear={this._clearFields}
         list={editedList}
