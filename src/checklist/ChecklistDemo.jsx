@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { fetchChecklist, createChecklist, updateChecklist, deleteChecklist } from '../checklist/checklist.action';
+import { fetchChecklist, deleteChecklist } from '../checklist/checklist.action';
 
 const uuid = require('uuid/v4');
 
@@ -43,9 +43,9 @@ class CheckListDemo extends React.Component {
       if (id === '') {
         let newid = uuid();
         checklist.id = newid;
-        this.props.createChecklist(checklist);
+        // this.props.createChecklist(checklist);
       } else {
-        this.props.updateChecklist(checklist);
+        // this.props.updateChecklist(checklist);
       }
 
       this._clearFields();
@@ -54,7 +54,7 @@ class CheckListDemo extends React.Component {
 
   _onListToggleHandler = (checklist) => {
     checklist.checked = !checklist.checked;
-    this.props.updateChecklist(checklist);
+    // this.props.updateChecklist(checklist);
   }
 
   _clearFields = () => {
@@ -83,6 +83,10 @@ class CheckListDemo extends React.Component {
     });
   }
 
+  _onClickFetchChecklist = () => {
+    this.props.fetchChecklist({ query: ''});
+  }
+
   render() {
     const { checklists } = this.props;
     let editedList = {
@@ -94,6 +98,7 @@ class CheckListDemo extends React.Component {
     return(
       <div className="main-container uk-container uk-position-top-center">
         <ListForm onSave={this._onClickSaveHandler} 
+        onClickFetch={this._onClickFetchChecklist}
         onClear={this._clearFields}
         list={editedList}
         onFieldChange={this._onFieldChangeHandler}
@@ -107,6 +112,8 @@ class CheckListDemo extends React.Component {
             onEdit={this._onClickEditHandler}
             onToggle={this._onListToggleHandler} />)
         }
+
+        <div>{this.props.notifications[0]}</div>
         
       </div>
     );
@@ -119,7 +126,7 @@ class SingleList extends React.Component {
     const { list, onDelete, onEdit } = this.props;
     
     return (
-      <div className="uk-button-group" uk-margin>
+      <div className="uk-button-group" uk-margin="true">
         <button className="uk-button uk-button-small uk-button-primary" 
           uk-tooltip="title: Delete this list; pos: right;" 
           onClick={() => onDelete(list)}><span role="img" aria-label="delete this item">🚮</span>
@@ -149,10 +156,10 @@ class SingleList extends React.Component {
 
 class ListForm extends React.Component {
   render() {
-    const { list, onFieldChange, onSave, onClear, onKeyDown, onClickChecker } = this.props;
+    const { list, onFieldChange, onSave, onClear, onKeyDown, onClickChecker, onClickFetch } = this.props;
 
     return (
-      <div className="uk-margin" uk-form-custom>
+      <div className="uk-margin uk-form-custom">
         <span className="input-form-checklist" role="img" aria-label="form-check" 
         uk-tooltip="title: ✔ means done; pos: right;"
         onClick={onClickChecker}>{list.checked ? '✔' : '❌' } </span>
@@ -163,6 +170,7 @@ class ListForm extends React.Component {
         <div className="uk-button-group">
           <button className="uk-button uk-button-primary" onClick={onSave}>{list.id === '' ? 'Add' : 'Save' } List</button>
           <button className="uk-button uk-button-default" onClick={onClear}>Clear</button>
+          <button className="uk-button uk-button-danger" onClick={onClickFetch}>Fetch</button>
         </div>
       </div>
     );
@@ -171,16 +179,15 @@ class ListForm extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    checklists: state.checklists
+    checklists: state.checklists,
+    notifications: state.notifications
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    fetchChecklist: () => dispatch(fetchChecklist()),
-    createChecklist: (l) => dispatch(createChecklist(l)),
-    updateChecklist: (l) => dispatch(updateChecklist(l)),
-    deleteChecklist: (l) => dispatch(deleteChecklist(l))
+    fetchChecklist: (query) => dispatch(fetchChecklist({query})),
+    deleteChecklist: (l) => dispatch(deleteChecklist({ checklist: l}))
   };
 }
 
